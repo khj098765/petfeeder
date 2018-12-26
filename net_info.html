@@ -1,0 +1,109 @@
+<html>
+    <head>
+        <title>DIO page</title>
+        <script>
+            function AJAX(url, callback)
+            { 
+                var req = AJAX_init(); 
+                req.onreadystatechange = AJAX_processRequest; 
+            
+                function AJAX_init() { 
+                    if (window.XMLHttpRequest) { 
+                        return new XMLHttpRequest(); 
+                    } else if (window.ActiveXObject) { 
+                        return new ActiveXObject('Microsoft.XMLHTTP'); 
+                    } 
+                };
+                  
+                function AJAX_processRequest() { 
+                    if(req.readyState == 4) { 
+                        if(req.status == 200) { 
+                            if(callback) 
+                                callback(req.responseText); 
+                        } 
+                    } 
+                };
+                 
+                this.doGet = function() { 
+                    req.open('GET', url, true); 
+                    req.send(null); 
+                };	  
+                
+                this.doPost = function(body) { 
+                    req.open('POST', url, true); 
+                    req.setRequestHeader('Content-Type', 
+                    'application/x-www-form-urlencoded'); 
+                    req.setRequestHeader('ISAJAX','yes'); 
+                    req.send(body); 
+                }; 
+            };           
+            
+            function $(id){return document.getElementById(id);}  
+            function $$(id){return document.getElementsByName(id);}  
+            function $$_ie(tag, name){ 
+                if(!tag){tag='*';}	  
+                
+                var elems=document.getElementsByTagName(tag); 
+                var res=[]; 
+                for(var i=0;i<elems.length;i++){ 
+                    att=elems[i].getAttribute('name'); 
+                    if(att==name){ 
+                        res.push(elems[i]); 
+                    }
+                }
+                return res; 
+            }            
+            
+            function selset(id,val){
+                var o=$(id);
+                for(var i=0;i<o.options.length;i++){
+                    if(i==val){
+                        o.options[i].selected=true;
+                        break;
+                    }
+                }
+            }  
+            
+            
+            function selset_name(name, val){
+                var o=$$(name);
+                for(var i=0;i<o.options.length;i++){
+                    if(i==val){
+                        o.options[i].selected=true;
+                        break;
+                    }
+                }
+            }
+
+            function NetinfoCallback(o){
+                $('txtmac').value=o.mac;  
+			    $('txtip').value=o.ip;  
+			    $('txtsn').value=o.sn;
+			    $('txtgw').value=o.gw;  
+            }  
+
+            function getNetinfo(){  
+			    var oUpdate;  
+			    setTimeout(function(){  
+			        oUpdate=new AJAX('get_netinfo.cgi',function(t){  
+			            try{eval(t);}catch(e){alert(e);}  
+			        });  
+			    oUpdate.doGet();},300);  
+			}
+        </script>
+    </head>
+    <body onload='getNetinfo();'> 
+		<div> 
+	    	 WIZwiki-W7500 Web Web Server Network Information 
+		</div> 
+	    <br>
+        <ul> 
+            <li><label for='txtmac'>MAC:</label><br><input id='txtmac' name='mac' type='text' size='20' disabled='disabled'/></li>  
+            <li><label for='txtip'>IP:</label><br><input id='txtip' name='ip' type='text' size='20' disabled='disabled'/></li>  
+            <li><label for='txtsn'>SN:</label><br><input id='txtsn' name='sn' type='text' size='20' disabled='disabled'/></li>  
+            <li><label for='txtgw'>GW:</label><br><input id='txtgw' name='gw' type='text' size='20' disabled='disabled'/></li>  
+	    </ul> 
+    </body> 
+</html>
+
+
